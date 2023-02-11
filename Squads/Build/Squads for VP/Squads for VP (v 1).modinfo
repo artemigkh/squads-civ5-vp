@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mod id="59c70c09-d8ec-4856-b012-33b43b4f98fc" version="1">
+  <Properties>
+    <Name>Squads for VP</Name>
+    <Stability>Alpha</Stability>
+    <Teaser>Squads modmod for Vox Populi</Teaser>
+    <Description>Squads modmod for Vox Populi</Description>
+    <Authors>Vern</Authors>
+    <HideSetupGame>0</HideSetupGame>
+    <AffectsSavedGames>1</AffectsSavedGames>
+    <MinCompatibleSaveVersion>0</MinCompatibleSaveVersion>
+    <SupportsSinglePlayer>1</SupportsSinglePlayer>
+    <SupportsMultiplayer>1</SupportsMultiplayer>
+    <SupportsHotSeat>1</SupportsHotSeat>
+    <SupportsMac>1</SupportsMac>
+    <ReloadAudioSystem>0</ReloadAudioSystem>
+    <ReloadLandmarkSystem>0</ReloadLandmarkSystem>
+    <ReloadStrategicViewSystem>0</ReloadStrategicViewSystem>
+    <ReloadUnitSystem>0</ReloadUnitSystem>
+  </Properties>
+  <Dependencies>
+    <Mod id="8411a7a8-dad3-4622-a18e-fcc18324c799" minversion="0" maxversion="999" title="(2) Vox Populi" />
+  </Dependencies>
+  <References />
+  <Blocks />
+  <Files>
+    <File md5="6C07CE6690590BED027E7BE2298C3AA0" import="1">Art/MilitaryIcon.dds</File>
+    <File md5="DE97C3525F7FDB1D2A6A9A1A6A2369B4" import="0">DB/Squads.sql</File>
+    <File md5="D63DC8BB6AA0F310DD55B264DB49C7E2" import="1">ThirdParty/PlotIterators.lua</File>
+    <File md5="E1EFB9E9E3D425990BAE95857AD9D126" import="1">ThirdParty/TableSaverLoader.lua</File>
+    <File md5="B38F6BEE070BC09418239B43C00B0B83" import="1">UI/SquadBases.lua</File>
+    <File md5="7EE83EE908539B5686B6624178F53B7B" import="1">UI/SquadNames.lua</File>
+    <File md5="4F564641E294083F944D41436AEF29CA" import="1">UI/Squads.lua</File>
+    <File md5="32DA5944CAA60DD3FE14A20FC961C00C" import="0">UI/Squads.xml</File>
+    <File md5="F35065EBD8F9C48BA4F9F9A9F0D7F6A4" import="1">UI/SquadsUtil.lua</File>
+    <File md5="1AA0EEAE5B2F5C846709892C8AE02298" import="0">XML/Squads_EN_US.xml</File>
+  </Files>
+  <Actions>
+    <OnModActivated>
+      <UpdateDatabase>XML/Squads_EN_US.xml</UpdateDatabase>
+      <UpdateDatabase>DB/Squads.sql</UpdateDatabase>
+    </OnModActivated>
+  </Actions>
+  <EntryPoints>
+    <EntryPoint type="InGameUIAddin" file="UI/Squads.xml">
+      <Name>Squads</Name>
+      <Description>Squads for VP</Description>
+    </EntryPoint>
+  </EntryPoints>
+</Mod>
