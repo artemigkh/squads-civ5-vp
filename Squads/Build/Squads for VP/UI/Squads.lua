@@ -1,6 +1,6 @@
 print("This is the 'Squads' mod script.")
 
--- core/eui
+-- core
 include( "IconSupport" );
 include( "InstanceManager" );
 
@@ -13,6 +13,8 @@ include( "SquadBases.lua" );
 include( "SquadNames.lua" );
 
 
+local bHighlightSquadUnits = true;
+local SquadsEndMovementType = 0;
 
 SQUADS_MODE_NONE = 0;
 SQUADS_MODE_MOVE = 1;
@@ -27,8 +29,26 @@ local currentMode = SQUADS_MODE_NONE;
 local bIsBoxSelecting = false;
 local pSelectBoxStartPlot = nil;
 
--- UI.SetInterfaceMode
+-- Options Logic
+function SquadsOptionChanged(optionKey, newValue)
+    if optionKey == "HighlightSquadUnits" then
+        print("Setting highlight squad units option to ", newValue);
+        bHighlightSquadUnits = newValue;
+    elseif optionKey == "SquadsEndMovementType" then
+        print("Setting (main) SquadsEndMovementType to ", newValue);
+        SquadsEndMovementType = newValue;
 
+        -- In case squad movement is in progress
+        local playerID = Game.GetActivePlayer();
+        local pActivePlayer = Players[playerID];
+        for unit in pActivePlayer:Units() do
+            unit:SetSquadEndMovementType(SquadsEndMovementType);
+        end
+    end
+end
+LuaEvents.SQUADS_OPTIONS_CHANGED.Add(SquadsOptionChanged);
+
+-- Mode Logic
 function SetSquadsMode(mode)
     print("setting squads mode to", mode);
     -- if mode == currentMode then return end
@@ -188,6 +208,7 @@ function HandleRecallSquadButton ()
 
     local bMovedSquad = false;
     for unit in getSquadUnits(pPlayer, currentSquadNumber) do
+        unit:SetSquadEndMovementType(SquadsEndMovementType);
         unit:DoSquadMovement(squadBasePlot);
         bMovedSquad = true;
         break;
@@ -197,26 +218,19 @@ function HandleRecallSquadButton ()
 end
 Controls.RecallSquadButton:RegisterCallback(Mouse.eLClick, HandleRecallSquadButton);
 
-function InputHandler( uiMsg, wParam, lParam )
-    print("in squads InputHandler()");
-    if uiMsg == KeyEvents.KeyDown then
-        if wParam == Keys.VK_ESCAPE or wParam == Keys.VK_RETURN then
-            OnClose();
-            return true;
-        end
+function HandleResetSquadButton ()
+    print("handle reset squad button clicked");
+    local iPlayer = Game.GetActivePlayer();
+    local pPlayer = Players[ iPlayer ];
+
+    for unit in getSquadUnits(pPlayer, currentSquadNumber) do
+        RemoveFromSquadWithEvent(unit);
     end
-end
-ContextPtr:SetInputHandler( InputHandler );
 
-function OnClose ()
-  ContextPtr:SetHide(true)
+    BuildUnitList();
 end
-Controls.CloseButton:RegisterCallback(Mouse.eLClick, OnClose)
+Controls.ResetSquadButton:RegisterCallback(Mouse.eLClick, HandleResetSquadButton);
 
-function Open()
-    ContextPtr:SetHide(false)
-    SetSquadsMode(SQUADS_MODE_NONE);
-end
 
 function IsInBoxSelectArea(pPlotToCheck)
     if pSelectBoxStartPlot == nil or currentPlot == nil then
@@ -231,8 +245,30 @@ function IsInBoxSelectArea(pPlotToCheck)
     elseif currentPlot:GetX() >= pSelectBoxStartPlot:GetX() and currentPlot:GetY() <= pSelectBoxStartPlot:GetY() then
         return pPlotToCheck:GetX() >= pSelectBoxStartPlot:GetX() and pPlotToCheck:GetX() <= currentPlot:GetX() and 
                pPlotToCheck:GetY() <= pSelectBoxStartPlot:GetY() and pPlotToCheck:GetY() >= currentPlot:GetY();
+    -- Box drawn from top right to bottom left
+    elseif currentPlot:GetX() <= pSelectBoxStartPlot:GetX() and currentPlot:GetY() <= pSelectBoxStartPlot:GetY() then
+        return pPlotToCheck:GetX() <= pSelectBoxStartPlot:GetX() and pPlotToCheck:GetX() >= currentPlot:GetX() and 
+               pPlotToCheck:GetY() <= pSelectBoxStartPlot:GetY() and pPlotToCheck:GetY() >= currentPlot:GetY();
+    -- Box drawn from bottom right to top left
+    elseif currentPlot:GetX() <= pSelectBoxStartPlot:GetX() and currentPlot:GetY() >= pSelectBoxStartPlot:GetY() then
+        return pPlotToCheck:GetX() <= pSelectBoxStartPlot:GetX() and pPlotToCheck:GetX() >= currentPlot:GetX() and 
+               pPlotToCheck:GetY() >= pSelectBoxStartPlot:GetY() and pPlotToCheck:GetY() <= currentPlot:GetY();
     end
 end
+
+
+function AssignToSquadWithEvent(pUnit, squadNumber)
+    pUnit:AssignToSquad(currentSquadNumber);
+    LuaEvents.OnSquadChangeEvent(Game.GetActivePlayer(), pUnit:GetID());
+end
+
+function RemoveFromSquadWithEvent(pUnit)
+    pUnit:RemoveFromSquad();
+    LuaEvents.OnSquadChangeEvent(Game.GetActivePlayer(), pUnit:GetID());
+end
+
+
+
 
 -- TODO: move this somewhere organized
 function DoBoxSelect()
@@ -250,8 +286,9 @@ function DoBoxSelect()
             local unitCount = pLoopPlot:GetNumUnits();
             for i = 0, unitCount do
                 local pUnit = pLoopPlot:GetUnit(i);
-                if pUnit ~= nil then
-                    pUnit:AssignToSquad(currentSquadNumber);
+
+                if pUnit ~= nil and pUnit:GetUnitClassType() ~= GameInfoTypes["UNITCLASS_WORKER"] and pUnit:GetUnitClassType() ~= GameInfoTypes["UNITCLASS_WORKBOAT"] then
+                    AssignToSquadWithEvent(pUnit, currentSquadNumber);
                     bUnitsSelected = true;
                 end
             end
@@ -285,19 +322,19 @@ function HandleLeftClickUp(wParam, lParam)
     
     if currentPlot ~= nil then
         local unitCount = currentPlot:GetNumUnits();
-        if unitCount == 0 then
+        if unitCount == 1 then
             local unit = currentPlot:GetUnit(0);
 
             if unit:GetSquadNumber() == currentSquadNumber then
-                unit:RemoveFromSquad();
+                RemoveFromSquadWithEvent(unit);
             else
-                unit:AssignToSquad(currentSquadNumber);
+                AssignToSquadWithEvent(unit, currentSquadNumber);
             end
         else
             for i = 0, unitCount do
                 local pUnit = currentPlot:GetUnit(i);
                 if pUnit ~= nil then
-                    pUnit:AssignToSquad(currentSquadNumber);
+                    AssignToSquadWithEvent(pUnit, currentSquadNumber);
                 end
             end
         end
@@ -394,6 +431,7 @@ function HandleMoveSquad(wParam, lParam)
 
         local bMovedSquad = false;
         for unit in getSquadUnits(pPlayer, currentSquadNumber) do
+            unit:SetSquadEndMovementType(SquadsEndMovementType);
             unit:DoSquadMovement(currentPlot);
             bMovedSquad = true;
             break;
@@ -427,7 +465,7 @@ function OnUnitSelectionChange(iPlayerID, iUnitID, i, j, k, isSelected)
         if currentMode == SQUADS_MODE_UNIT_MANAGEMENT then
             local pPlayer = Players[iPlayerID];
             local pUnit = pPlayer:GetUnitByID(iUnitID);
-            pUnit:AssignToSquad(currentSquadNumber);
+            AssignToSquadWithEvent(pUnit, currentSquadNumber);
         end
 
         -- workaround for when flag is clicked, need to put the correct
@@ -436,18 +474,20 @@ function OnUnitSelectionChange(iPlayerID, iUnitID, i, j, k, isSelected)
         return 
     end
 
-    Events.ClearHexHighlights();
+    -- Events.ClearHexHighlights();
     if (isSelected) then
         local pPlayer = Players[iPlayerID];
         local pUnit = pPlayer:GetUnitByID(iUnitID);
         print("selected unit in squad #", pUnit:GetSquadNumber());
+
+        local bSquadNumChanged = (pUnit:GetSquadNumber() ~= currentSquadNumber);
+
         if (pUnit:GetSquadNumber() > -1) then
-            HighlightSquadUnits(pPlayer, pUnit:GetSquadNumber());
+            _highlightSquadUnits(pPlayer, pUnit:GetSquadNumber(), bSquadNumChanged);
         end
 
         if pUnit:GetSquadNumber() > 0 then
             currentSquadNumber = pUnit:GetSquadNumber();
-            HighlightSquadBase(pPlayer, currentSquadNumber);
         end
 
         
@@ -457,7 +497,12 @@ Events.UnitSelectionChanged.Add( OnUnitSelectionChange );
 
 
 function HighlightSquadUnits(pPlayer, squadNumber)
-    Events.ClearHexHighlights();
+    _highlightSquadUnits(pPlayer, squadNumber, false);
+end
+
+function _highlightSquadUnits(pPlayer, squadNumber, clearOldHighlights)
+    if not bHighlightSquadUnits and currentMode ~= SQUADS_MODE_UNIT_MANAGEMENT and currentMode ~= SQUADS_MODE_BASE_MANAGEMENT then return end 
+    if clearOldHighlights then Events.ClearHexHighlights() end
     if squadNumber == -1 then return end
     for unit in getSquadUnits(pPlayer, squadNumber)
     do
@@ -468,6 +513,7 @@ function HighlightSquadUnits(pPlayer, squadNumber)
 end
 
 function HighlightAllSquadStatus(pPlayer)
+
     print("highlighting all squad status, current squad num is ", currentSquadNumber)
     Events.ClearHexHighlights();
     for unit in pPlayer:Units() do
@@ -669,9 +715,17 @@ m_tGreatPeopleIcons = {
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 function UnitClicked(unitID)
+    print("unit in squads list selected")
     local pSelectedUnit = UI:GetHeadSelectedUnit();
-    if( pSelectedUnit ~= nil and
-        pSelectedUnit:GetID() == unitID ) then
+    if pSelectedUnit == nil then return end
+
+    if UIManager:GetAlt() then
+        print("with alt")
+        RemoveUnitFromSquadList(unitID);
+        return;
+    end
+
+    if pSelectedUnit:GetID() == unitID then
         UI.LookAtSelectionPlot(0);
     else
 	    Events.SerialEventUnitFlagSelected( Game:GetActivePlayer(), unitID );
@@ -682,7 +736,16 @@ end
 --ak have view follow unit selection
 Events.SerialEventUnitFlagSelected.Add( function() UI.LookAtSelectionPlot(0) end)
 
+function RemoveUnitFromSquadList(unitID)
+    print("removing unit from squad list")
+    local iPlayer = Game.GetActivePlayer();
+    local pPlayer = Players[ iPlayer ];
+    local pUnit = pPlayer:GetUnitByID(unitID);
+    if pUnit == nil then return end
 
+    RemoveFromSquadWithEvent(pUnit);
+    BuildUnitList();
+end
 -------------------------------------------------------------------------------
 -------------------------------------------------------------------------------
 function UpdateScreen()
@@ -785,6 +848,7 @@ function BuildUnitList(iSelectedUnit)
         m_SortTable[ tostring( instance.Root ) ] = sortEntry;
         
         instance.Button:RegisterCallback( Mouse.eLClick, UnitClicked );
+        instance.Button:RegisterCallback( Mouse.eRClick, RemoveUnitFromSquadList );
         instance.Button:SetVoid1( unit:GetID() );
         
 		-- Infixo: ShowXPinMO/get unit's Name or Type
@@ -1096,22 +1160,40 @@ function ShowHideHandler( bIsHide, bInitState )
 
     if( not bInitState ) then
         if( not bIsHide ) then
-        	UI.incTurnTimerSemaphore();
 			m_bSortReverse = not m_bSortReverse;
         	OnSort( m_SortMode );
-        	Events.SerialEventGameMessagePopupShown(m_PopupInfo);
-        -- else
-        --     UI.decTurnTimerSemaphore();
-        --     Events.SerialEventGameMessagePopupProcessed.CallImmediate(ButtonPopupTypes.BUTTONPOPUP_MILITARY_OVERVIEW, 0);
         end
     end
 end
 ContextPtr:SetShowHideHandler( ShowHideHandler );
 
+ContextPtr:SetHide(true);
+
+
+function InputHandler( uiMsg, wParam, lParam )
+    print("in squads InputHandler()");
+    if uiMsg == KeyEvents.KeyDown then
+        if wParam == Keys.VK_ESCAPE or wParam == Keys.VK_RETURN then
+            OnClose();
+            return true;
+        end
+    end
+end
+ContextPtr:SetInputHandler( InputHandler );
+
+function OnClose ()
+  ContextPtr:SetHide(true)
+end
+Controls.CloseButton:RegisterCallback(Mouse.eLClick, OnClose)
+
+function Open()
+    ContextPtr:SetHide(false)
+    SetSquadsMode(SQUADS_MODE_NONE);
+end
+
 ----------------------------------------------------------------
 -- 'Active' (local human) player has changed
 ----------------------------------------------------------------
-Events.GameplaySetActivePlayer.Add(OnClose);
 -- Boilerplate
 function OnDiploCornerPopup()
     Open();
@@ -1127,5 +1209,6 @@ LuaEvents.RequestRefreshAdditionalInformationDropdownEntries()
 
 Events.GameplaySetActivePlayer.Add(OnClose)
 
-
+-- Load last so listeners in this file are ready
+include( "SquadsOptions.lua" );
 print("Loaded Squads.lua from 'Squads for VP'")

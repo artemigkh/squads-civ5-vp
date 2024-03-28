@@ -3,16 +3,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
     <ProjectGuid>{e819a499-969f-462a-a66c-1ebbed7f7d4e}</ProjectGuid>
-    <Name>Squads for VP</Name>
+    <Name>(4b) Squads - Group Movement + RTS Style Control Groups</Name>
     <Guid>59c70c09-d8ec-4856-b012-33b43b4f98fc</Guid>
-    <ModVersion>1</ModVersion>
-    <Stability>Alpha</Stability>
+    <ModVersion>2</ModVersion>
+    <Stability>Beta</Stability>
     <Teaser>Squads modmod for Vox Populi</Teaser>
     <Description>Squads modmod for Vox Populi</Description>
     <Authors>Vern</Authors>
     <SpecialThanks>
     </SpecialThanks>
-    <AffectsSavedGames>true</AffectsSavedGames>
+    <AffectsSavedGames>false</AffectsSavedGames>
     <MinCompatibleSaveVersion>0</MinCompatibleSaveVersion>
     <SupportsSinglePlayer>true</SupportsSinglePlayer>
     <SupportsMultiplayer>true</SupportsMultiplayer>
@@ -20,7 +20,15 @@
     <SupportsMac>true</SupportsMac>
     <AssemblyName>Squads</AssemblyName>
     <RootNamespace>Squads</RootNamespace>
-    <ModReferences />
+    <ModReferences>
+      <Association>
+        <Type>Mod</Type>
+        <Name>(2) Vox Populi</Name>
+        <Id>8411a7a8-dad3-4622-a18e-fcc18324c799</Id>
+        <MinVersion>0</MinVersion>
+        <MaxVersion>999</MaxVersion>
+      </Association>
+    </ModReferences>
     <ModContent>
       <Content xmlns="">
         <Type>InGameUIAddin</Type>
@@ -43,14 +51,37 @@
       </Action>
     </ModActions>
     <ModDependencies>
-      <Association xmlns="">
+      <Association>
         <Type>Mod</Type>
-        <Name>(2) Vox Populi</Name>
-        <Id>8411a7a8-dad3-4622-a18e-fcc18324c799</Id>
+        <Name>(1) Community Patch</Name>
+        <Id>d1b6328c-ff44-4b0d-aad7-c657f83610cd</Id>
+        <MinVersion>0</MinVersion>
+        <MaxVersion>999</MaxVersion>
+      </Association>
+      <Association>
+        <Type>Mod</Type>
+        <Name>(3a) VP - EUI Compatibility Files</Name>
+        <Id>d1b6328c-ff44-4b0d-aad7-c657f83610cd</Id>
         <MinVersion>0</MinVersion>
         <MaxVersion>999</MaxVersion>
       </Association>
     </ModDependencies>
+    <ModBlockers>
+      <Association>
+        <Type>Mod</Type>
+        <Name>Linked and Group Unit Movement for VP-noEUI </Name>
+        <Id>24923240-e4fb-4bf6-link-6e5b6cf4d3c2</Id>
+        <MinVersion>0</MinVersion>
+        <MaxVersion>999</MaxVersion>
+      </Association>
+      <Association>
+        <Type>Mod</Type>
+        <Name>Linked and Group Unit Movement for VP-EUI </Name>
+        <Id>24923240-e4fb-4bf6-link-6e5b6cf4d3c2</Id>
+        <MinVersion>0</MinVersion>
+        <MaxVersion>999</MaxVersion>
+      </Association>
+    </ModBlockers>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Default' ">
     <OutputPath>.</OutputPath>
@@ -102,6 +133,10 @@
     <Content Include="UI\Squads.xml">
       <SubType>Lua</SubType>
       <ImportIntoVFS>False</ImportIntoVFS>
+    </Content>
+    <Content Include="UI\SquadsOptions.lua">
+      <SubType>Lua</SubType>
+      <ImportIntoVFS>True</ImportIntoVFS>
     </Content>
     <Content Include="UI\SquadsUtil.lua">
       <SubType>Lua</SubType>

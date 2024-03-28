@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Mod id="59c70c09-d8ec-4856-b012-33b43b4f98fc" version="1">
+<Mod id="59c70c09-d8ec-4856-b012-33b43b4f98fc" version="2">
   <Properties>
-    <Name>Squads for VP</Name>
-    <Stability>Alpha</Stability>
+    <Name>(4b) Squads - Group Movement + RTS Style Control Groups</Name>
+    <Stability>Beta</Stability>
     <Teaser>Squads modmod for Vox Populi</Teaser>
     <Description>Squads modmod for Vox Populi</Description>
     <Authors>Vern</Authors>
     <HideSetupGame>0</HideSetupGame>
-    <AffectsSavedGames>1</AffectsSavedGames>
-    <MinCompatibleSaveVersion>0</MinCompatibleSaveVersion>
+    <AffectsSavedGames>0</AffectsSavedGames>
     <SupportsSinglePlayer>1</SupportsSinglePlayer>
     <SupportsMultiplayer>1</SupportsMultiplayer>
     <SupportsHotSeat>1</SupportsHotSeat>
@@ -19,21 +18,28 @@
     <ReloadUnitSystem>0</ReloadUnitSystem>
   </Properties>
   <Dependencies>
-    <Mod id="8411a7a8-dad3-4622-a18e-fcc18324c799" minversion="0" maxversion="999" title="(2) Vox Populi" />
+    <Mod id="d1b6328c-ff44-4b0d-aad7-c657f83610cd" minversion="0" maxversion="999" title="(1) Community Patch" />
+    <Mod id="d1b6328c-ff44-4b0d-aad7-c657f83610cd" minversion="0" maxversion="999" title="(3a) VP - EUI Compatibility Files" />
   </Dependencies>
-  <References />
-  <Blocks />
+  <References>
+    <Mod id="8411a7a8-dad3-4622-a18e-fcc18324c799" minversion="0" maxversion="999" title="(2) Vox Populi" />
+  </References>
+  <Blocks>
+    <Mod id="24923240-e4fb-4bf6-link-6e5b6cf4d3c2" minversion="0" maxversion="999" title="Linked and Group Unit Movement for VP-noEUI " />
+    <Mod id="24923240-e4fb-4bf6-link-6e5b6cf4d3c2" minversion="0" maxversion="999" title="Linked and Group Unit Movement for VP-EUI " />
+  </Blocks>
   <Files>
     <File md5="6C07CE6690590BED027E7BE2298C3AA0" import="1">Art/MilitaryIcon.dds</File>
     <File md5="DE97C3525F7FDB1D2A6A9A1A6A2369B4" import="0">DB/Squads.sql</File>
     <File md5="D63DC8BB6AA0F310DD55B264DB49C7E2" import="1">ThirdParty/PlotIterators.lua</File>
     <File md5="E1EFB9E9E3D425990BAE95857AD9D126" import="1">ThirdParty/TableSaverLoader.lua</File>
-    <File md5="B38F6BEE070BC09418239B43C00B0B83" import="1">UI/SquadBases.lua</File>
-    <File md5="7EE83EE908539B5686B6624178F53B7B" import="1">UI/SquadNames.lua</File>
-    <File md5="4F564641E294083F944D41436AEF29CA" import="1">UI/Squads.lua</File>
-    <File md5="32DA5944CAA60DD3FE14A20FC961C00C" import="0">UI/Squads.xml</File>
+    <File md5="F7722CF1E54BB90A9EA87AD3874B2A69" import="1">UI/SquadBases.lua</File>
+    <File md5="389A8F7C27BE23A8362EDC3442CF5630" import="1">UI/SquadNames.lua</File>
+    <File md5="E268176A43D63BF50E12035536D3D4F0" import="1">UI/Squads.lua</File>
+    <File md5="17C9D8F834EA57BF09B6B8C4E037C179" import="0">UI/Squads.xml</File>
+    <File md5="A6A182183BF06C468A56913FC9C013B5" import="1">UI/SquadsOptions.lua</File>
     <File md5="F35065EBD8F9C48BA4F9F9A9F0D7F6A4" import="1">UI/SquadsUtil.lua</File>
-    <File md5="1AA0EEAE5B2F5C846709892C8AE02298" import="0">XML/Squads_EN_US.xml</File>
+    <File md5="58FDFA62CC4C3C8A648546F3A47C8F3E" import="0">XML/Squads_EN_US.xml</File>
   </Files>
   <Actions>
     <OnModActivated>

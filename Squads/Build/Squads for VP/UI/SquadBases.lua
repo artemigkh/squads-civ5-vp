@@ -98,6 +98,5 @@ function RegisterOnSaveCallback()
     local VupEndTurnButtonControl = ContextPtr:LookUpControl("/InGame/WorldView/ActionInfoPanel/EndTurnButton") --> Lookup the "End Turn Button"
     QuickSaveButton:RegisterCallback( Mouse.eLClick, PazyrykOnQuickSaveClicked )
     SaveCtrlButton:RegisterCallback( Mouse.eLClick, PazyrykOnSaveClicked )
-    VupEndTurnButtonControl:RegisterCallback(Mouse.eLClick, FupEndTurnCheck) --> Get any left click on the "End Turn Button"
     print ("SaveGame Buttons callbacks registered...")
 end
