@@ -3,10 +3,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
     <ProjectGuid>{e819a499-969f-462a-a66c-1ebbed7f7d4e}</ProjectGuid>
-    <Name>(4b) Squads - Group Movement + RTS Style Control Groups</Name>
+    <Name>Squads for VP</Name>
     <Guid>59c70c09-d8ec-4856-b012-33b43b4f98fc</Guid>
-    <ModVersion>2</ModVersion>
-    <Stability>Beta</Stability>
+    <ModVersion>3</ModVersion>
+    <Stability>Stable</Stability>
     <Teaser>Squads modmod for Vox Populi</Teaser>
     <Description>Squads modmod for Vox Populi</Description>
     <Authors>Vern</Authors>

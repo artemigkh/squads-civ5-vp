@@ -53,28 +53,22 @@ Controls.FlagsNumberCheckBox:RegisterCheckHandler(HandleFlagsNumberCheckBox);
 
 function HandleAlertOnArrivalRadioButton()
     print("HandleAlertOnArrivalRadioButton")
-    if SquadsEndMovementType ~= 0 then
-        SquadsEndMovementType = 0;
-        LuaEvents.SQUADS_OPTIONS_CHANGED("SquadsEndMovementType", SquadsEndMovementType);
-    end
+    SquadsEndMovementType = 0;
+    LuaEvents.SQUADS_OPTIONS_CHANGED("SquadsEndMovementType", SquadsEndMovementType);
 end
 Controls.AlertOnArrivalRadioButton:RegisterCheckHandler(HandleAlertOnArrivalRadioButton);
 
 function HandleWakeOnUnitArrivalRadioButton()
     print("HandleWakeOnUnitArrivalRadioButton")
-    if SquadsEndMovementType ~= 1 then
-        SquadsEndMovementType = 1;
-        LuaEvents.SQUADS_OPTIONS_CHANGED("SquadsEndMovementType", SquadsEndMovementType);
-    end
+    SquadsEndMovementType = 1;
+    LuaEvents.SQUADS_OPTIONS_CHANGED("SquadsEndMovementType", SquadsEndMovementType);
 end
 Controls.WakeOnUnitArrivalRadioButton:RegisterCheckHandler(HandleWakeOnUnitArrivalRadioButton);
 
 function HandleWakeOnSquadArrivalRadioButton()
     print("HandleWakeOnSquadArrivalRadioButton")
-    if SquadsEndMovementType ~= 2 then
-        SquadsEndMovementType = 2;
-        LuaEvents.SQUADS_OPTIONS_CHANGED("SquadsEndMovementType", SquadsEndMovementType);
-    end
+    SquadsEndMovementType = 2;
+    LuaEvents.SQUADS_OPTIONS_CHANGED("SquadsEndMovementType", SquadsEndMovementType);
 end
 Controls.WakeOnSquadArrivalRadioButton:RegisterCheckHandler(HandleWakeOnSquadArrivalRadioButton);
 
@@ -88,11 +82,11 @@ function SquadsOptionChanged(optionKey, newValue)
         print("Setting FlagsNumberCheckBox checkbox to ", newValue);
     elseif optionKey == "SquadsEndMovementType" then
         print("Setting SquadsEndMovementType to ", newValue);
-        if newValue == 0 then
+        if newValue == 0 and Controls.AlertOnArrivalRadioButton:IsChecked() then
             Controls.AlertOnArrivalRadioButton:SetCheck(true);
-        elseif newValue == 1 then
+        elseif newValue == 1 and Controls.WakeOnUnitArrivalRadioButton:IsChecked() then
             Controls.WakeOnUnitArrivalRadioButton:SetCheck(true);
-        elseif newValue == 2 then
+        elseif newValue == 2 and Controls.WakeOnSquadArrivalRadioButton:IsChecked() then
             Controls.WakeOnSquadArrivalRadioButton:SetCheck(true);
         end
     end

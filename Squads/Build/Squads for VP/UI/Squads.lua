@@ -389,6 +389,9 @@ for i=1,10 do
 end
 
 function HandleNumericHotkey(number, bCtrl)
+    if number == 0 then
+        number = 10
+    end
     print("handling numeric hotkey #", number);
 
     local lastPressTime = lastHotkeyTimeLut[number];
